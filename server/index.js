@@ -2,28 +2,23 @@ require('dotenv').config()
 const express = require('express')
 const cors = require('cors')
 const cookieParser = require('cookie-parser')
-const mysql = require("mysql2");
+const mongoose = require("mongoose");
+const router = require('./router/index.js');
 
 const PORT = process.env.PORT || 5000;
 const app = express()
-
-const connection = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    database: "test",
-    password: "dimoninbirsk1!"
-  });
+app.use(express.json())
+app.use(cookieParser())
+app.use(cors())
+app.use('/api', router)
+ 
 
 const start = async () =>{
-    connection.connect(function(err){
-        if (err) {
-          return console.error("Ошибка: " + err.message);
-        }
-        else{
-          console.log("Подключение к серверу MySQL успешно установлено");
-        }
-     });
     try{
+        await mongoose.connect(process.env.DB_URL , {
+            useNewUrlParser: true,
+            useUnifiedTopology: true
+        })
         app.listen(PORT, ()=> {
             console.log(`Server start on PORT = ${PORT}`)
         })
